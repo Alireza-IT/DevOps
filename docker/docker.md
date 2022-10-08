@@ -120,3 +120,6 @@ if you want to create different volumes for rest of containers we have to define
 
 c:\ProgramData\docker\volumes
 mac/linux : /var/lib/docker/volumes
+
+
+docker volumes inspect volumes name --> to see current mount point on host.
