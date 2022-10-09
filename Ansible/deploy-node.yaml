@@ -1,0 +1,76 @@
+---
+- name: install node and npm
+  hosts: 3.127.135.201
+  become: yes
+  tasks:
+    - name: update apt repo and cache 
+      apt: 
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+    - name: Install nodejs and npm
+      apt:
+        pkg: # install list of packages
+          - nodejs
+          - npm 
+# - name: Create new linux user for node app
+#   hosts: 18.184.54.64
+#   become: yes
+#   tasks:
+#   - name: Create linux user
+#     user:
+#       name: alireza
+#       comment: Alireza Admin
+#       group: admin
+
+
+- name: deployed nodejs app
+  hosts: 3.127.135.201
+  #become: True # to enable the become features
+  #become_user: alireza
+  # vars:
+  #   - location: /Users/alireza/w/DevOps/bootcamp-project/simple-nodejs
+  #   - version: 1.0.0
+  #   - destination: /home/ubuntu/
+  vars_file:
+    - project-vars
+  tasks:
+    - name: copy Nodejs folder to server
+      copy:
+        # src: "{{node-file-location}}" #parametraize inorder to not consider as dictionary we use "" after :
+        src: "{{location}}/nodejs-app-{{version}}.tgz"
+        dest: "{{destination}}/app-1.0.0.tgz"
+      register: deploy_result
+    - debug: msg={{deploy_result}}
+      
+    - name: unpack the node js tar file
+      unarchive: # we can combine them too with copy 
+        src: "{{destination}}/app-1.0.0.tgz"
+        dest: "{{destination}}"
+        remote_src: yes # src attribute has to be on remote server . not specify it looks for this on local machine
+
+#install app depedencies 
+# run node command and execure server js 
+    - name : Install dependencies 
+      npm:
+        path: "{{destination}}/package" # path to package json on remote"
+    - name: start app
+      command:
+        chdir: "{{destination}}/package/app"
+        cmd: node server # we do not have any npm modules so we use command and run in backgroud by adding async and poll
+      # general modules 
+      async: 1000
+      poll: 0
+    - name: Ensure app is running
+      shell: ps aux | grep node  # same as command  but different is execute command in shell and we can do | and environment variable but command is secure 
+      register: app_status # having this variable and register result to this variable using for the output of ansible task 
+    - name: Showing the result
+      debug: 
+        msg: "{{app_status.stdout_lines}}" #reference variable 
+
+         
+
+
+
+
+        
