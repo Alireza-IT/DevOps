@@ -171,3 +171,18 @@ conditioning with attribute called when :
 
 
 wait for and pause modules are for waiting for sometimes for somethings
+
+Define default host file in project instead of passing as parameters
+in ansible.cfg --> inventory = location of hosts file --> hosts
+
+we can have separate configurations base on each project
+
+ansible-palybook nameofyaml file
+
+every modiles is in the collection 
+comminuity.docker.docker_image
+namespace . collection. module name
+we can pass FQDN 
+ansible.builtin is default namespace 
+in future version you should always to start with FQDN becasue we can have same name module in collections
+
