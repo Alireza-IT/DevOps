@@ -1,7 +1,20 @@
 [webserver]
-3.70.99.131
-52.28.96.63
+3.71.200.111
+
+
+[nexus_server]
+18.193.82.168
+
+[docker_server]
+18.193.130.206
+
 
 [webserver:vars]
-ansible_ssh_private_key_file=~/.ssh/MainKey.pem
+ansible_ssh_private_key_file=~/.ssh/Mainkey.pem
 ansible_user=ubuntu
+[nexus_server:vars]
+ansible_ssh_private_key_file=~/.ssh/Mainkey.pem
+ansible_user=ubuntu
+[docker_server:vars]
+ansible_ssh_private_key_file=~/.ssh/Mainkey.pem
+ansible_user=ec2-user

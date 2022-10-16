@@ -1,10 +1,10 @@
 ---
-- name: Configure nginx web server 
+- name: Configure nginx web server # is play name and every play has to have hosts
   hosts: webserver
   become: yes # to be sudo when want to install 
-  tasks:
-  - name: install nginx server
-    apt:
+  tasks: # list of jobs that we want to run on hosts
+  - name: install nginx server # give name whatever you want
+    apt: # it's module which is specific command that we want to execute 
       name: nginx 
       # name: nginx:version we want or use regular expression 
       state: latest
@@ -13,6 +13,6 @@
   - name: start nginx server
     service:
       name: nginx
-      state: started
+      state: started # server should be started
       # state : stopped
   

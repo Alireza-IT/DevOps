@@ -1,0 +1,111 @@
+---
+
+- name: Install python3 & docker , docker-compose
+  hosts: docker_server
+  become: yes
+  ga ther_facts: False # use python3 inter for gathering facts based on ansible.cg because python3 is not exists thats why we tell ansible to nit run this on first play.
+  tasks:
+    - name: Make sure python3 and docker are installed
+      vars:
+        ansible_python_interpreter: /usr/bin/python
+      yum:
+        name: 
+          - python3
+          - docker
+        update_cache: yes
+        state: present
+    - name: Make sure docker compose is installed
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup("pipe","uname -m")}}
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+# - name: Install docker-compose
+#   become: yes
+#   hosts: docker_server
+#   tasks:
+#     - name: Make sure docker compose is installed
+#       get_url:
+#         url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-{{lookup("pipe","uname -m")}}
+#         dest: /usr/local/bin/docker-compose
+#         mode: +x
+
+    # url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(name -m)
+# {{lookup("pipe", "uname -m")}} pipe is an ansible lookup plugins and it calculate the output of the shell command and pipe it to the left side of your lookup and it's part of jinja 2 template
+
+#start docker daemon
+
+- name: start docker
+  hosts: docker_server
+  become: yes
+  tasks:
+    - name: Ensure docker is running
+      systemd:
+        name: docker
+        state: started
+    - name: Install docker python module
+      pip:
+        name : 
+          - docker
+          - docker-compose
+
+
+# add ec2 user to docker group 
+#adding to group may affect after reconnecting to servers
+- name: add ec2-user to docker group
+  hosts: docker_server
+  become: yes
+  tasks:
+    - name: Ensure ec2-user is added to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+    - name : reconnect ro server session
+      meta: reset_connection
+- name: create new linux user
+  hosts: docker_server
+  become: yes
+  tasks:
+    - name: Create new linux user
+      user: 
+        name: nana
+        groups: "{{user_groups}}"
+ #we got error because we have to reconnect again to get affected by previous play       
+# - name: Test docker pull
+#   hosts: docker_server
+#   tasks:
+#     - name: Make sure docker can pull images
+#       command: docker pull redis
+# using docker imge module from collections
+
+# - name: Test docker pull
+#   # community.collections.docker_image
+#   hosts: docker_server
+#   tasks:
+#     - name: Make sure docker can pull images
+#       docker_image:
+#         name: redis
+#         source: pull
+  
+- name:  Start docker containers
+  # vars:
+  #   - name: docker_password
+  #     prompt: Enter password for docker registry
+  vars_files:
+    - project-vars
+  hosts: docker_server
+  tasks:
+    - name: Copy docker_compose file
+      copy:
+        src: src path
+        dest: destination path
+    - name : login into docker hub
+      docker_login:
+        registry_url: https://index.docker.io/v1
+        username: id
+        password: "{{docker_password}}"
+    - name: start container from compose
+      docker_compose:
+        project_src: /home/ex2-user
+        state: present
+      

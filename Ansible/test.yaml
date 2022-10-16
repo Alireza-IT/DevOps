@@ -1,0 +1,12 @@
+- name: this is a test
+  hosts: testserver
+  become: yes
+  tasks:
+  - name: first module
+    apt:
+      name: nginx
+      state: absent
+  - name: second module 
+    service:
+      name: nginx
+      state: stopped
