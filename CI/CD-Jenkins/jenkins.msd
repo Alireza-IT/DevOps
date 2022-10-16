@@ -11,7 +11,9 @@ publish docker images -->store credential in jenkins
 
 for installation we need to have open twp port 8080 for accessing ui and 50000 for lustering jenkings worker and master
 
+
 we have jenkins administrator to handle  jenkins itself (devopus)
+
 jenkins user who are creating jobs inorder to run workflow (devops & developer)
 
 install build tool on jenkins:
